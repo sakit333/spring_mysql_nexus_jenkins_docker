@@ -1,11 +1,11 @@
-################################################################################
-#  Jenkins Pipeline for Docker Compose Deployment
-#  Designed and Developed by: @sak_shetty
-#  Description:
-#    - Deploys Spring Boot app, MySQL, and Nexus using Docker Compose
-#    - Supports choices: Deploy or Remove
-#    - Cleans all images, volumes, and orphan containers when removing
-################################################################################
+// ################################################################################
+// #  Jenkins Pipeline for Docker Compose Deployment
+// #  Designed and Developed by: @sak_shetty
+// #  Description:
+// #    - Deploys Spring Boot app, MySQL, and Nexus using Docker Compose
+// #    - Supports choices: Deploy or Remove
+// #    - Cleans all images, volumes, and orphan containers when removing
+// ################################################################################
 
 pipeline {
     agent any
