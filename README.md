@@ -4,7 +4,8 @@
 > Designed and Developed by sak_shetty for automated build, deploy, and cleanup.
 ---
 ## Overview
-This repository contains a full-stack deployment setup for a Spring Boot application using Docker Compose and Jenkins.  
+
+- This repository contains a full-stack deployment setup for a Spring Boot application using Docker Compose and Jenkins.  
 It includes MySQL as the database, Nexus as the artifact repository, and a multi-stage Dockerfile for building and deploying the Spring Boot application.  
 All services communicate via a dedicated Docker bridge network, and the pipeline allows you to deploy or remove the entire stack with ease.
 ---
