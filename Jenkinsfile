@@ -1,52 +1,61 @@
+################################################################################
+#  Jenkins Pipeline for Docker Compose Deployment
+#  Designed and Developed by: @sak_shetty
+#  Description:
+#    - Deploys Spring Boot app, MySQL, and Nexus using Docker Compose
+#    - Supports choices: Deploy or Remove
+#    - Cleans all images, volumes, and orphan containers when removing
+################################################################################
+
 pipeline {
     agent any
-    tools{
-        maven 'maven'
+
+    environment {
+        COMPOSE_FILE = 'docker-compose.yml'
     }
+
+    parameters {
+        choice(
+            name: 'ACTION',
+            choices: ['Deploy', 'Remove'],
+            description: 'Select the action to perform on Docker Compose stack'
+        )
+    }
+
     stages {
-        stage('Build') {
-            steps {
-                sh 'mvn clean package -DskipTests'
+        stage('Docker Compose Deploy') {
+            when {
+                expression { params.ACTION == 'Deploy' }
             }
-        }
-        stage('deploy to app_server') {
             steps {
+                echo "🚀 Building and starting containers..."
                 sh '''
-                    echo "Checking if Spring application is running..."
-                    if pgrep -f target/spring_app_sak-0.0.1-SNAPSHOT.jar > /dev/null; then
-                        echo "App is running. Stopping it..."
-                        sudo pkill -f target/spring_app_sak-0.0.1-SNAPSHOT.jar
-                        sleep 3
-                    else
-                        echo "App is not running. Skipping stop."
-                    fi
-
-                    echo "Starting the Spring application..."
-                    sudo java -jar target/spring_app_sak-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
+                docker-compose -f $COMPOSE_FILE up -d --build
                 '''
-
             }
         }
-        stage('deploy to nexus'){
-            steps{
-                sh 'mvn -s settings.xml deploy'
+
+        stage('Docker Compose Remove & Cleanup') {
+            when {
+                expression { params.ACTION == 'Remove' }
             }
-            post {
-                success {
-                    echo "Deployed successfully to nexus"
-                }
-                failure {
-                    echo "Failed to Deploy to nexus"
-                }
+            steps {
+                echo "🧹 Stopping containers and cleaning all resources..."
+                sh '''
+                docker-compose -f $COMPOSE_FILE down --rmi all --volumes --remove-orphans
+                docker system prune -af
+                docker volume prune -f
+                '''
             }
         }
     }
+
     post {
         success {
-            echo "Deployed successfully"
+            echo "✅ Pipeline executed successfully! - Designed and Developed by sak_shetty"
         }
         failure {
-            echo "Failed to Deploy"
+            echo "❌ Pipeline failed. Check Jenkins logs! - Designed and Developed by sak_shetty"
         }
     }
 }
